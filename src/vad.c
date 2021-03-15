@@ -25,6 +25,7 @@ typedef struct {
   float zcr;
   float p;
   float am;
+  float broo;
 } Features;
 
 /* 
