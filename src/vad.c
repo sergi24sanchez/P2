@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "vad.h"
+#include "pav_analysis.h"
 
 const float FRAME_TIME = 10.0F; /* in ms. */
 
@@ -25,7 +26,6 @@ typedef struct {
   float zcr;
   float p;
   float am;
-  float broo;
 } Features;
 
 /* 
@@ -43,7 +43,9 @@ Features compute_features(const float *x, int N) {
    * For the moment, compute random value between 0 and 1 
    */
   Features feat;
-  feat.zcr = feat.p = feat.am = (float) rand()/RAND_MAX;
+  feat.zcr = compute_zcr(x,N,16000);
+  feat.p = compute_power(x,N);
+  feat.am = compute_am(x,N);
   return feat;
 }
 
@@ -51,11 +53,16 @@ Features compute_features(const float *x, int N) {
  * TODO: Init the values of vad_data
  */
 
-VAD_DATA * vad_open(float rate) {
+VAD_DATA * vad_open(float rate, int number_init) {
   VAD_DATA *vad_data = malloc(sizeof(VAD_DATA));
   vad_data->state = ST_INIT;
   vad_data->sampling_rate = rate;
   vad_data->frame_length = rate * FRAME_TIME * 1e-3;
+  vad_data->alpha0 = 6;
+  vad_data->counter_N = number_init;
+  vad_data->counter_init = 0;
+  vad_data->p_noise_0 = 0;
+
   return vad_data;
 }
 
@@ -90,28 +97,37 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
 
   switch (vad_data->state) {
   case ST_INIT:
-    vad_data->state = ST_SILENCE;
+    if(vad_data->counter_init < vad_data->counter_N){
+      vad_data->counter_init++;
+      vad_data->p_noise_0 += pow(10, f.p/10);
+    }
+    else{
+      vad_data->state = ST_SILENCE;
+      vad_data->p_noise_0 = 10*log10(vad_data->p_noise_0/vad_data->counter_N);
+      vad_data->k0 = vad_data->p_noise_0 + vad_data->alpha0;
+    }
+    
     break;
 
   case ST_SILENCE:
-    if (f.p > 0.95)
+    if (f.p > vad_data->k0)
       vad_data->state = ST_VOICE;
     break;
 
   case ST_VOICE:
-    if (f.p < 0.01)
+    if (f.p < vad_data->k0)
       vad_data->state = ST_SILENCE;
     break;
 
   case ST_UNDEF:
     break;
   }
-
+  
   if (vad_data->state == ST_SILENCE ||
       vad_data->state == ST_VOICE)
     return vad_data->state;
   else
-    return ST_UNDEF;
+    return ST_SILENCE;
 }
 
 void vad_show_state(const VAD_DATA *vad_data, FILE *out) {
