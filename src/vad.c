@@ -58,11 +58,15 @@ VAD_DATA * vad_open(float rate, int number_init) {
   vad_data->state = ST_INIT;
   vad_data->sampling_rate = rate;
   vad_data->frame_length = rate * FRAME_TIME * 1e-3;
-  vad_data->alpha0 = 3.75;
-  vad_data->alpha1 = ;
+  vad_data->alpha1 = 3.75;
+  vad_data->alpha2 = 4;
   vad_data->counter_N = number_init;
   vad_data->counter_init = 0;
   vad_data->k0 = 0;
+  vad_data->k1 = 0;
+  vad_data->k2 = 0;
+  vad_data->frames_MV = 5;
+  vad_data->frames_MS = 5;
 
   return vad_data;
 }
@@ -96,6 +100,7 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
 
+  int frames_undef = 0;
   switch (vad_data->state) {
   case ST_INIT:
     if(vad_data->counter_init < vad_data->counter_N){
@@ -103,8 +108,9 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
       vad_data->k0 += pow(10, f.p/10);
     }
     else{
-      vad_data->k0 = 10*log10(vad_data-/vad_data->counter_N);
-      vad_data->k1 = vad_data->k0 + vad_data->alpha0;
+      vad_data->k0 = 10*log10(vad_data->k0/vad_data->counter_N);
+      vad_data->k1 = vad_data->k0 + vad_data->alpha1;
+      vad_data->k2 = vad_data->k1 + vad_data->alpha2;
       vad_data->state = ST_SILENCE;
     }
     
@@ -112,10 +118,7 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
 
   case ST_SILENCE:
     if (f.p > vad_data->k1)
-      vad_data->state = ST_MAYBE_VOICE;
-    else{
-      
-    }
+      vad_data->state = ST_VOICE;
     break;
 
   case ST_VOICE:
@@ -123,14 +126,42 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
       vad_data->state = ST_SILENCE;
     break;
 
-  case ST_MAYBE_VOICE:
-    if(f.p < vad_data->)
+  /*case ST_MAYBE_VOICE:
+    if(f.p > vad_data->k2)
+      vad_data->state = ST_VOICE;
+    else if (f.p < vad_data->k1)
+      vad_data->state = ST_SILENCE;
+    else
+      if(frames_undef > vad_data->frames_MV){
+        vad_data->state = ST_SILENCE;
+        frames_undef = 0;
+      }
+      else
+        frames_undef++;
     break;
 
   case ST_MAYBE_SILENCE:
+    if(f.p < vad_data->k1)
+      vad_data->state = ST_SILENCE;
+    else if(f.p > vad_data->k2)
+      vad_data->state = ST_VOICE;
+    else{
+      if(frames_undef > vad_data->frames_MS){
+        vad_data->state = ST_SILENCE;
+        frames_undef = 0;
+      }
+      else
+        frames_undef++;
+    }
+      
     break;
   }
+*/
+
+  case ST_UNDEF:
+    break;
   
+  }
   if (vad_data->state == ST_SILENCE ||
       vad_data->state == ST_VOICE)
     return vad_data->state;

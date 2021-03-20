@@ -94,6 +94,7 @@ int main(int argc, char *argv[]) {
       last_state = state;
       last_t = t;
     }
+    
 
     if (sndfile_out != 0) {
       /* TODO: go back and write zeros in silence segments */
