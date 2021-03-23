@@ -14,7 +14,7 @@ const float FRAME_TIME = 10.0F; /* in ms. */
  */
 
 const char *state_str[] = {
-  "UNDEF", "S", "V", "INIT"
+  "UNDEF", "S", "V", "INIT", "MV", "MS"
 };
 
 const char *state2str(VAD_STATE st) {
@@ -58,15 +58,15 @@ VAD_DATA * vad_open(float rate, int number_init) {
   vad_data->state = ST_INIT;
   vad_data->sampling_rate = rate;
   vad_data->frame_length = rate * FRAME_TIME * 1e-3;
-  vad_data->alpha1 = 3.75;
-  vad_data->alpha2 = 4;
+  vad_data->alpha1 = 3;
+  vad_data->alpha2 = 6;
   vad_data->counter_N = number_init;
   vad_data->counter_init = 0;
   vad_data->k0 = 0;
   vad_data->k1 = 0;
   vad_data->k2 = 0;
-  vad_data->frames_MV = 5;
-  vad_data->frames_MS = 5;
+  vad_data->frames_MV = 5;  // numero de frames esperando para pasar a VOZ
+  vad_data->frames_MS = 10;  // numero de frames max para que vuelva a VOZ
 
   return vad_data;
 }
@@ -100,7 +100,8 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
 
-  int frames_undef = 0;
+  int fr_und = 0, min_back_voice = 2, min_back_voice_counter = 0; // frames indefinidos (MV/MS)
+  
   switch (vad_data->state) {
   case ST_INIT:
     if(vad_data->counter_init < vad_data->counter_N){
@@ -118,13 +119,55 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
 
   case ST_SILENCE:
     if (f.p > vad_data->k1)
-      vad_data->state = ST_VOICE;
+      vad_data->state = ST_MV;
     break;
 
   case ST_VOICE:
-    if (f.p < vad_data->k1)
-      vad_data->state = ST_SILENCE;
+    if (f.p < vad_data->k2)
+      vad_data->state = ST_MS;
     break;
+  
+  case ST_MV:
+    if(f.p < vad_data->k1 || fr_und >= vad_data->frames_MV){
+      vad_data->state = ST_SILENCE;
+      fr_und = 0;
+    }
+    else{
+      if(f.p > vad_data->k2){
+        vad_data->state = ST_VOICE;
+        fr_und = 0;
+      }
+      else{
+        fr_und++;
+      }
+      
+    }      
+    break;
+
+  case ST_MS:
+    if(f.p > vad_data->k2 && fr_und <= vad_data->frames_MS){
+      min_back_voice_counter++; // contador para mirar si es únicamente una muestra la que sobrepasa de k2
+      if(min_back_voice_counter >= min_back_voice ){
+        vad_data->state = ST_VOICE;
+        fr_und = 0;
+      }
+      else{
+        fr_und++;
+      }
+    }
+    else{
+      min_back_voice_counter = 0;
+      if(f.p < vad_data->k1 || fr_und >= vad_data->frames_MS){  // llevamos mucho tiempo esperando
+        vad_data->state = ST_SILENCE;
+        fr_und = 0;
+      }
+      else{ // entre k1 y k2, y llevamos poco tiempo
+        fr_und++;
+      }
+      
+    } 
+    break;
+  
 
   /*case ST_MAYBE_VOICE:
     if(f.p > vad_data->k2)
@@ -160,13 +203,14 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
 
   case ST_UNDEF:
     break;
-  
   }
-  if (vad_data->state == ST_SILENCE ||
+  return vad_data->state;
+
+ /* if (vad_data->state == ST_SILENCE ||
       vad_data->state == ST_VOICE)
     return vad_data->state;
   else
-    return ST_SILENCE;
+    return ST_SILENCE;*/
 }
 
 void vad_show_state(const VAD_DATA *vad_data, FILE *out) {
