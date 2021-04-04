@@ -53,13 +53,13 @@ Features compute_features(const float *x, int N) {
  * TODO: Init the values of vad_data
  */
 
-VAD_DATA * vad_open(float rate, int number_init) {
+VAD_DATA * vad_open(float rate, int number_init, float n_alpha1, float n_alpha2) {
   VAD_DATA *vad_data = malloc(sizeof(VAD_DATA));
   vad_data->state = ST_INIT;
   vad_data->sampling_rate = rate;
   vad_data->frame_length = rate * FRAME_TIME * 1e-3;
-  vad_data->alpha1 = 3;
-  vad_data->alpha2 = 6;
+  vad_data->alpha1 = n_alpha1;
+  vad_data->alpha2 = n_alpha2;
   vad_data->counter_N = number_init;
   vad_data->counter_init = 0;
   vad_data->k0 = 0;
@@ -71,11 +71,12 @@ VAD_DATA * vad_open(float rate, int number_init) {
   return vad_data;
 }
 
-VAD_STATE vad_close(VAD_DATA *vad_data) {
+VAD_STATE vad_close(VAD_DATA *vad_data, VAD_STATE state) {
   /* 
    * TODO: decide what to do with the last undecided frames
    */
-  VAD_STATE state = vad_data->state;
+  if(state!= ST_SILENCE && state!= ST_VOICE)
+    state = ST_SILENCE;
 
   free(vad_data);
   return state;
@@ -114,7 +115,7 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
       vad_data->k2 = vad_data->k1 + vad_data->alpha2;
       vad_data->state = ST_SILENCE;
     }
-    
+
     break;
 
   case ST_SILENCE:
@@ -140,7 +141,6 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
       else{
         fr_und++;
       }
-      
     }      
     break;
 
@@ -167,50 +167,16 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
       
     } 
     break;
-  
-
-  /*case ST_MAYBE_VOICE:
-    if(f.p > vad_data->k2)
-      vad_data->state = ST_VOICE;
-    else if (f.p < vad_data->k1)
-      vad_data->state = ST_SILENCE;
-    else
-      if(frames_undef > vad_data->frames_MV){
-        vad_data->state = ST_SILENCE;
-        frames_undef = 0;
-      }
-      else
-        frames_undef++;
-    break;
-
-  case ST_MAYBE_SILENCE:
-    if(f.p < vad_data->k1)
-      vad_data->state = ST_SILENCE;
-    else if(f.p > vad_data->k2)
-      vad_data->state = ST_VOICE;
-    else{
-      if(frames_undef > vad_data->frames_MS){
-        vad_data->state = ST_SILENCE;
-        frames_undef = 0;
-      }
-      else
-        frames_undef++;
-    }
-      
-    break;
-  }
-*/
 
   case ST_UNDEF:
     break;
   }
-  return vad_data->state;
-
- /* if (vad_data->state == ST_SILENCE ||
-      vad_data->state == ST_VOICE)
+  if (vad_data->state == ST_SILENCE || vad_data->state == ST_VOICE)
     return vad_data->state;
+  else if(vad_data->state == ST_INIT)
+    return ST_SILENCE;
   else
-    return ST_SILENCE;*/
+    return ST_UNDEF;
 }
 
 void vad_show_state(const VAD_DATA *vad_data, FILE *out) {

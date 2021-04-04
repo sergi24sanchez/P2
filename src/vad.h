@@ -26,7 +26,7 @@ typedef struct {
    It should return allocated and initialized values of vad_data
 
    sampling_rate: ... the sampling rate */
-VAD_DATA *vad_open(float sampling_rate, int number_init);
+VAD_DATA *vad_open(float sampling_rate, int number_init, float n_alpha1, float n_alpha2);
 
 /* vad works frame by frame.
    This function returns the frame size so that the program knows how
@@ -45,7 +45,7 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x);
 
 /* Free memory
    Returns the state of the last (undecided) states. */
-VAD_STATE vad_close(VAD_DATA *vad_data);
+VAD_STATE vad_close(VAD_DATA *vad_data, VAD_STATE state);
 
 /* Print actual state of vad, for debug purposes */
 void vad_show_state(const VAD_DATA *, FILE *);
