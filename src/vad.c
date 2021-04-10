@@ -53,7 +53,7 @@ Features compute_features(const float *x, int N) {
  * TODO: Init the values of vad_data
  */
 
-VAD_DATA * vad_open(float rate, int number_init, float n_alpha1, float n_alpha2) {
+VAD_DATA * vad_open(float rate, int number_init, float n_alpha1, float n_alpha2, int frames_mv, int frames_ms) {
   VAD_DATA *vad_data = malloc(sizeof(VAD_DATA));
   vad_data->state = ST_INIT;
   vad_data->sampling_rate = rate;
@@ -65,8 +65,11 @@ VAD_DATA * vad_open(float rate, int number_init, float n_alpha1, float n_alpha2)
   vad_data->k0 = 0;
   vad_data->k1 = 0;
   vad_data->k2 = 0;
-  vad_data->frames_MV = 5;  // numero de frames esperando para pasar a VOZ
-  vad_data->frames_MS = 10;  // numero de frames max para que vuelva a VOZ
+  vad_data->frames_mv = frames_mv ;  // numero de frames esperando para pasar a VOZ
+  vad_data->frames_ms = frames_ms;  // numero de frames max para que vuelva a VOZ
+  vad_data->fr_und = 0;
+  vad_data->min_back_voice_counter = 0;
+
 
   return vad_data;
 }
@@ -75,11 +78,10 @@ VAD_STATE vad_close(VAD_DATA *vad_data, VAD_STATE state) {
   /* 
    * TODO: decide what to do with the last undecided frames
    */
-  if(state!= ST_SILENCE && state!= ST_VOICE)
-    state = ST_SILENCE;
 
+  VAD_STATE state_r = vad_data->state;
   free(vad_data);
-  return state;
+  return state_r;
 }
 
 unsigned int vad_frame_size(VAD_DATA *vad_data) {
@@ -101,7 +103,6 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
 
-  int fr_und = 0, min_back_voice = 2, min_back_voice_counter = 0; // frames indefinidos (MV/MS)
   
   switch (vad_data->state) {
   case ST_INIT:
@@ -127,45 +128,29 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
     if (f.p < vad_data->k2)
       vad_data->state = ST_MS;
     break;
-  
-  case ST_MV:
-    if(f.p < vad_data->k1 || fr_und >= vad_data->frames_MV){
-      vad_data->state = ST_SILENCE;
-      fr_und = 0;
-    }
-    else{
-      if(f.p > vad_data->k2){
-        vad_data->state = ST_VOICE;
-        fr_und = 0;
-      }
-      else{
-        fr_und++;
-      }
-    }      
-    break;
 
   case ST_MS:
-    if(f.p > vad_data->k2 && fr_und <= vad_data->frames_MS){
-      min_back_voice_counter++; // contador para mirar si es únicamente una muestra la que sobrepasa de k2
-      if(min_back_voice_counter >= min_back_voice ){
-        vad_data->state = ST_VOICE;
-        fr_und = 0;
-      }
-      else{
-        fr_und++;
-      }
+    if (vad_data->fr_und == vad_data->frames_ms){
+      vad_data->state = ST_SILENCE;
+      vad_data->fr_und = 0;
+    } else if(f.p > vad_data->k2 && vad_data->fr_und < vad_data->frames_ms){
+      vad_data->state = ST_VOICE;
+      vad_data->fr_und = 0;
+    } else {
+      vad_data->fr_und++;
     }
-    else{
-      min_back_voice_counter = 0;
-      if(f.p < vad_data->k1 || fr_und >= vad_data->frames_MS){  // llevamos mucho tiempo esperando
-        vad_data->state = ST_SILENCE;
-        fr_und = 0;
-      }
-      else{ // entre k1 y k2, y llevamos poco tiempo
-        fr_und++;
-      }
-      
-    } 
+    break;
+
+  case ST_MV:
+    if(vad_data->fr_und == vad_data->frames_mv){
+      vad_data->fr_und = 0;
+      vad_data->state = ST_SILENCE;
+    } else if(f.p > vad_data->k2 && vad_data->fr_und < vad_data->frames_mv){
+      vad_data->fr_und = 0;
+      vad_data->state = ST_VOICE;
+    }else{
+      vad_data->fr_und++;
+    }      
     break;
 
   case ST_UNDEF:

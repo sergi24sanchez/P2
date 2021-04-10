@@ -1,0 +1,120 @@
+Parameters: N: 6, A1: 2, A2: 5
+===> TOTAL: 90.222%
+Parameters: N: 6, A1: 2, A2: 5.5
+===> TOTAL: 90.306%
+Parameters: N: 6, A1: 2, A2: 6
+===> TOTAL: 90.239%
+Parameters: N: 6, A1: 2, A2: 6.5
+===> TOTAL: 90.199%
+Parameters: N: 6, A1: 2.5, A2: 5
+===> TOTAL: 89.771%
+Parameters: N: 6, A1: 2.5, A2: 5.5
+===> TOTAL: 89.666%
+Parameters: N: 6, A1: 2.5, A2: 6
+===> TOTAL: 89.611%
+Parameters: N: 6, A1: 2.5, A2: 6.5
+===> TOTAL: 89.569%
+Parameters: N: 6, A1: 3, A2: 5
+===> TOTAL: 89.349%
+Parameters: N: 6, A1: 3, A2: 5.5
+===> TOTAL: 89.285%
+Parameters: N: 6, A1: 3, A2: 6
+===> TOTAL: 89.265%
+Parameters: N: 6, A1: 3, A2: 6.5
+===> TOTAL: 89.147%
+Parameters: N: 7, A1: 2, A2: 5
+===> TOTAL: 90.229%
+Parameters: N: 7, A1: 2, A2: 5.5
+===> TOTAL: 90.297%
+Parameters: N: 7, A1: 2, A2: 6
+===> TOTAL: 90.240%
+Parameters: N: 7, A1: 2, A2: 6.5
+===> TOTAL: 90.253%
+Parameters: N: 7, A1: 2.5, A2: 5
+===> TOTAL: 89.754%
+Parameters: N: 7, A1: 2.5, A2: 5.5
+===> TOTAL: 89.685%
+Parameters: N: 7, A1: 2.5, A2: 6
+===> TOTAL: 89.654%
+Parameters: N: 7, A1: 2.5, A2: 6.5
+===> TOTAL: 89.608%
+Parameters: N: 7, A1: 3, A2: 5
+===> TOTAL: 89.405%
+Parameters: N: 7, A1: 3, A2: 5.5
+===> TOTAL: 89.365%
+Parameters: N: 7, A1: 3, A2: 6
+===> TOTAL: 89.310%
+Parameters: N: 7, A1: 3, A2: 6.5
+===> TOTAL: 89.238%
+Parameters: N: 8, A1: 2, A2: 5
+===> TOTAL: 90.422%
+Parameters: N: 8, A1: 2, A2: 5.5
+===> TOTAL: 90.426%
+Parameters: N: 8, A1: 2, A2: 6
+===> TOTAL: 90.391%
+Parameters: N: 8, A1: 2, A2: 6.5
+===> TOTAL: 90.386%
+Parameters: N: 8, A1: 2.5, A2: 5
+===> TOTAL: 90.030%
+Parameters: N: 8, A1: 2.5, A2: 5.5
+===> TOTAL: 89.980%
+Parameters: N: 8, A1: 2.5, A2: 6
+===> TOTAL: 89.947%
+Parameters: N: 8, A1: 2.5, A2: 6.5
+===> TOTAL: 89.899%
+Parameters: N: 8, A1: 3, A2: 5
+===> TOTAL: 89.500%
+Parameters: N: 8, A1: 3, A2: 5.5
+===> TOTAL: 89.470%
+Parameters: N: 8, A1: 3, A2: 6
+===> TOTAL: 89.366%
+Parameters: N: 8, A1: 3, A2: 6.5
+===> TOTAL: 89.293%
+Parameters: N: 9, A1: 2, A2: 5
+===> TOTAL: 90.420%
+Parameters: N: 9, A1: 2, A2: 5.5
+===> TOTAL: 90.383%
+Parameters: N: 9, A1: 2, A2: 6
+===> TOTAL: 90.345%
+Parameters: N: 9, A1: 2, A2: 6.5
+===> TOTAL: 90.340%
+Parameters: N: 9, A1: 2.5, A2: 5
+===> TOTAL: 89.855%
+Parameters: N: 9, A1: 2.5, A2: 5.5
+===> TOTAL: 89.816%
+Parameters: N: 9, A1: 2.5, A2: 6
+===> TOTAL: 89.799%
+Parameters: N: 9, A1: 2.5, A2: 6.5
+===> TOTAL: 89.732%
+Parameters: N: 9, A1: 3, A2: 5
+===> TOTAL: 89.530%
+Parameters: N: 9, A1: 3, A2: 5.5
+===> TOTAL: 89.495%
+Parameters: N: 9, A1: 3, A2: 6
+===> TOTAL: 89.433%
+Parameters: N: 9, A1: 3, A2: 6.5
+===> TOTAL: 89.391%
+Parameters: N: 10, A1: 2, A2: 5
+===> TOTAL: 90.358%
+Parameters: N: 10, A1: 2, A2: 5.5
+===> TOTAL: 90.344%
+Parameters: N: 10, A1: 2, A2: 6
+===> TOTAL: 90.320%
+Parameters: N: 10, A1: 2, A2: 6.5
+===> TOTAL: 90.341%
+Parameters: N: 10, A1: 2.5, A2: 5
+===> TOTAL: 89.843%
+Parameters: N: 10, A1: 2.5, A2: 5.5
+===> TOTAL: 89.818%
+Parameters: N: 10, A1: 2.5, A2: 6
+===> TOTAL: 89.801%
+Parameters: N: 10, A1: 2.5, A2: 6.5
+===> TOTAL: 89.747%
+Parameters: N: 10, A1: 3, A2: 5
+===> TOTAL: 89.515%
+Parameters: N: 10, A1: 3, A2: 5.5
+===> TOTAL: 89.484%
+Parameters: N: 10, A1: 3, A2: 6
+===> TOTAL: 89.422%
+Parameters: N: 10, A1: 3, A2: 6.5
+===> TOTAL: 89.319%
