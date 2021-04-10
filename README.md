@@ -126,11 +126,11 @@ Ejercicios
 
 		La tasa de cruces por cero nos ayuda a detectar diversas cosas:
 
-			- Detectar algunas consonantes sordas las cuales tienen una tasa muy alta (se observa con evidencia el caso de la consonante 's').
+			Detectar algunas consonantes sordas las cuales tienen una tasa muy alta (se observa con evidencia el caso de la consonante 's').
 
-			- Detectar un tramo de voz, ya que la tasa se mantiene relativamente baja en comparación con el resto del fichero de audio.
+			Detectar un tramo de voz, ya que la tasa se mantiene relativamente baja en comparación con el resto del fichero de audio.
 
-			- Cuando no es baja ni extremadamente alta, tenemos una tasa en término medio. Nos ayuda a detectar que estamos en un tramo de silencio, el cual contiene ruido de fondo.
+			Cuando no es baja ni extremadamente alta, tenemos una tasa en término medio. Nos ayuda a detectar que estamos en un tramo de silencio, el cual contiene ruido de fondo.
 
 
 ### Desarrollo del detector de actividad vocal
@@ -186,7 +186,7 @@ Ejercicios
   considere de interés de cara a su evaluación.
 
 	En el inicio de la práctica, se usó el audio de la práctica 1. Una vez implementado el detector, y optimizado para la base de datos, observamos que para nuestro fichero teníamos un pequeño problema: el número de tramas desde que se acaba la voz hasta el final del fichero es inferior que el número de tramas máximo que se deja para el estado 'Maybe Silence'. Al no encontrarse con una trama nueva de silencio, no se podían asignar a todas esas tramas de voz como 'Voice'; por lo tanto, se asignaban estas y las indefinidas como 'Silence', ya que era el final de fichero.
-	
+
 	Esto hacía que hubiera un compromiso en la puntuación entre la base de datos y nuestro fichero. Si encontrabamos el primer valor que provocara la mejora de la puntuación, de 79% a 96%, la puntuación de la base de datos se veía reducida de 93.598% a 92.460%. Después de ver que era un problema únicamente de nuestro audio, decidimos crear uno nuevo que no lo tuviera.
 	En todo caso, aunque nosotros usemos un audio diferente, este detector sigue obtenienido la misma puntuación.
 
