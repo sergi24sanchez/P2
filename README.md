@@ -111,7 +111,7 @@ Ejercicios
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
-		* Observando el contorno de potencia, junto con el conocimiento que tenemos sobre el fichero de audio de donde se corresponde con voz, y donde es silencio, consideramos que el incremento de potencia, respescto el silencio inicial, para asegurarse que un segmento de la señal es voz, debe ser alrededor de 20 dB.
+		Observando el contorno de potencia, junto con el conocimiento que tenemos sobre el fichero de audio de donde se corresponde con voz, y donde es silencio, consideramos que el incremento de potencia, respescto el silencio inicial, para asegurarse que un segmento de la señal es voz, debe ser alrededor de 20 dB.
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
 	* Observando el ejemplo del fichero de audio grabado por nosotros:
