@@ -86,7 +86,9 @@ int main(int argc, char *argv[]) {
 
     last_fr_und = vad_data->fr_und;
     state = vad(vad_data, buffer); //actualmente solo tiene los valores {ST_UNDEF, ST_SILENCE, ST_VOICE}
-    printf("last_feature %3d = %.4f\n", t, vad_data->last_feature); // para ver la potencia
+
+    //printf("last_feature %3d = %.4f\n", t, vad_data->last_feature); // para ver la potencia
+    
     if (verbose & DEBUG_VAD) vad_show_state(vad_data, stdout);
 
     if (sndfile_out != 0 && state != ST_SILENCE) {
@@ -106,7 +108,7 @@ int main(int argc, char *argv[]) {
       last_state = state;
     }    
   }
-  printf("k0 = %.4f\nk1 = %.4f\nk2 = %.4f\n",vad_data->k0, vad_data->k1, vad_data->k2);
+  //printf("k0 = %.4f\nk1 = %.4f\nk2 = %.4f\n",vad_data->k0, vad_data->k1, vad_data->k2);
 
   state = vad_close(vad_data,state);
   if(state != ST_SILENCE && state != ST_VOICE){
